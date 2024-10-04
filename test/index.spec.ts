@@ -1,25 +1,45 @@
 // test/index.spec.ts
-import { env, createExecutionContext, waitOnExecutionContext, SELF } from 'cloudflare:test';
 import { describe, it, expect } from 'vitest';
-import worker from '../src/index';
+import { findWinningMove } from '../src/index';
 
-// For now, you'll need to do something like this to get a correctly-typed
-// `Request` to pass to `worker.fetch()`.
-const IncomingRequest = Request<unknown, IncomingRequestCfProperties>;
-
-describe('Hello World worker', () => {
-	it('responds with Hello World! (unit style)', async () => {
-		const request = new IncomingRequest('http://example.com');
-		// Create an empty context to pass to `worker.fetch()`.
-		const ctx = createExecutionContext();
-		const response = await worker.fetch(request, env, ctx);
-		// Wait for all `Promise`s passed to `ctx.waitUntil()` to settle before running test assertions
-		await waitOnExecutionContext(ctx);
-		expect(await response.text()).toMatchInlineSnapshot(`"Hello World!"`);
+describe('findWinningMove', () => {
+	it('should find a winning move in a row', () => {
+		const grid = [
+			['X', 'X', null],
+			['O', 'O', null],
+			[null, null, null],
+		];
+		const result = findWinningMove(grid, 'X');
+		expect(result).toEqual({ row: 0, col: 2 });
 	});
 
-	it('responds with Hello World! (integration style)', async () => {
-		const response = await SELF.fetch('https://example.com');
-		expect(await response.text()).toMatchInlineSnapshot(`"Hello World!"`);
+	it('should find a winning move in a column', () => {
+		const grid = [
+			['X', 'O', null],
+			['X', null, null],
+			[null, 'O', null],
+		];
+		const result = findWinningMove(grid, 'X');
+		expect(result).toEqual({ row: 2, col: 0 });
+	});
+
+	it('should find a winning move in the first diagonal', () => {
+		const grid = [
+			['X', 'O', null],
+			['O', 'X', null],
+			[null, null, null],
+		];
+		const result = findWinningMove(grid, 'X');
+		expect(result).toEqual({ row: 2, col: 2 });
+	});
+
+	it('should return null if no winning move is available', () => {
+		const grid = [
+			['X', 'O', 'X'],
+			['O', 'X', 'O'],
+			['O', 'X', 'O'],
+		];
+		const result = findWinningMove(grid, 'X');
+		expect(result).toBeNull();
 	});
 });

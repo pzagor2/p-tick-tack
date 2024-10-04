@@ -1,5 +1,5 @@
 // Helper function to parse the grid state
-function parseMoves(size: number, moves: string): (string | null)[][] {
+export function parseMoves(size: number, moves: string): (string | null)[][] {
 	const grid = Array(size).fill(null).map(() => Array(size).fill(null));
 
 	if (moves) {
@@ -13,7 +13,7 @@ function parseMoves(size: number, moves: string): (string | null)[][] {
 }
 
 // Helper function to check for a win or block opportunity
-function findWinningMove(grid: (string | null)[][], symbol: string): { row: number, col: number } | null {
+export function findWinningMove(grid: (string | null)[][], symbol: string): { row: number, col: number } | null {
 	const size = grid.length;
 
 	// Check rows, columns, and diagonals
